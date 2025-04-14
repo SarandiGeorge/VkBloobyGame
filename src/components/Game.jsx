@@ -2,14 +2,6 @@
 import React, { useEffect, useRef, useContext } from 'react';
 // Импорт контекста баллов
 import { PointsContext } from '../contexts/PointsContext';
-// Импорт активов
-import ballImage from '../assets/ball.png';
-import playerImage from '../assets/player.png';
-import opponentImage from '../assets/opponent.png';
-import netImage from '../assets/net.png';
-import impactSound from '../assets/impact.wav';
-import whistleSound from '../assets/whistle.wav';
-import backgroundImage from '../assets/background.png'; // Новый фон
 
 // Компонент игры
 const Game = () => {
@@ -32,19 +24,19 @@ const Game = () => {
           default: 'arcade',
           arcade: {
             gravity: { y: 300 },
-            debug: true // Включаем отладку физики
+            debug: true // Включаем отладку физики для проверки hitbox
           }
         },
         scene: {
           preload: function() {
-            // Загрузка изображений и звуков
-            this.load.image('background', backgroundImage); // Загружаем фон
-            this.load.image('ball', ballImage);
-            this.load.image('player', playerImage);
-            this.load.image('opponent', opponentImage);
-            this.load.image('net', netImage);
-            this.load.audio('impact', impactSound);
-            this.load.audio('whistle', whistleSound);
+            // Загрузка изображений и звуков напрямую из /assets/
+            this.load.image('background', '/assets/background.png'); // Загружаем фон
+            this.load.image('ball', '/assets/ball.png');
+            this.load.image('player', '/assets/player.png');
+            this.load.image('opponent', '/assets/opponent.png');
+            this.load.image('net', '/assets/net.png');
+            this.load.audio('impact', '/assets/impact.wav');
+            this.load.audio('whistle', '/assets/whistle.wav');
 
             // Обработка ошибок загрузки
             this.load.on('filecomplete', (key) => {
@@ -56,7 +48,8 @@ const Game = () => {
           },
           create: function() {
             // Добавляем фоновое изображение
-            this.add.image(400, 300, 'background');
+            const bg = this.add.image(400, 300, 'background');
+            console.log('Фон добавлен:', bg); // Лог для отладки
 
             // Установка фонового цвета (на случай, если фон не загрузится)
             this.cameras.main.setBackgroundColor('#87CEEB'); // Голубой фон
@@ -69,27 +62,29 @@ const Game = () => {
 
             // Создание игровых объектов
             this.ball = this.physics.add.image(400, 100, 'ball')
-              .setScale(0.1) // Масштабирование до 40x40 px
+              .setScale(0.5) // Масштабирование (увеличиваем для теста)
               .setCircle(20) // Радиус hitbox — 20 px
               .setBounce(0.95);
-            console.log('Мяч создан:', this.ball);
+            console.log('Мяч создан:', this.ball); // Лог для отладки
 
             this.player = this.physics.add.image(100, 500, 'player')
-              .setScale(0.1) // Масштабирование до ~57x49 px
+              .setScale(0.5) // Масштабирование (увеличиваем для теста)
               .setCircle(28) // Радиус hitbox — 28 px
-              .setImmovable(true);
-            console.log('Игрок создан:', this.player);
+              .setImmovable(true)
+              .setCollideWorldBounds(true); // Ограничение границ
+            console.log('Игрок создан:', this.player); // Лог для отладки
 
             this.opponent = this.physics.add.image(700, 500, 'opponent')
-              .setScale(0.1) // Масштабирование до ~57x49 px
+              .setScale(0.5) // Масштабирование (увеличиваем для теста)
               .setCircle(28) // Радиус hitbox — 28 px
-              .setImmovable(true);
-            console.log('Оппонент создан:', this.opponent);
+              .setImmovable(true)
+              .setCollideWorldBounds(true); // Ограничение границ
+            console.log('Оппонент создан:', this.opponent); // Лог для отладки
 
             this.net = this.physics.add.image(400, 500, 'net')
-              .setScale(0.2, 0.2) // Масштабирование до ~10x140 px
+              .setScale(0.5, 0.5) // Масштабирование (увеличиваем для теста)
               .setImmovable(true);
-            console.log('Сетка создана:', this.net);
+            console.log('Сетка создана:', this.net); // Лог для отладки
 
             // Границы мира
             this.physics.world.setBounds(0, 0, 800, 600);
@@ -124,13 +119,13 @@ const Game = () => {
             // Отключение света
             this.isLightsOut = false;
             this.time.addEvent({
-              delay: 5000, // Уменьшаем задержку для теста (5 секунд вместо 15)
+              delay: 5000, // Уменьшаем задержку для теста (5 секунд)
               callback: () => {
                 if (!this.isLightsOut) {
                   this.isLightsOut = true;
                   this.darken = this.add.rectangle(400, 300, 800, 600, 0x000000, 0.7);
                   this.darken.setInteractive(); // Делаем затемнение интерактивным
-                  this.darken.setDepth(1000); // Устанавливаем высокий слой, чтобы затемнение было поверх всего
+                  this.darken.setDepth(1000); // Устанавливаем высокий слой
                   this.darken.on('pointerdown', (pointer) => {
                     console.log('Клик по затемнению зарегистрирован:', pointer); // Лог для отладки
                     if (this.isLightsOut) {
