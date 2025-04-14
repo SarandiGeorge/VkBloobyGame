@@ -7,7 +7,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/', // Путь для ресурсов
+    publicPath: '/', // Убедимся, что ресурсы доступны с корня
   },
   module: {
     rules: [
@@ -29,9 +29,12 @@ module.exports = {
     extensions: ['.js', '.jsx'], // Разрешаем импорты без указания расширения
   },
   devServer: {
-    static: path.resolve(__dirname, 'dist'),
+    static: {
+      directory: path.resolve(__dirname, 'dist'), // Отдаём содержимое dist/
+      publicPath: '/', // Убедимся, что корневой путь обрабатывается
+    },
     port: 9000,
-    historyApiFallback: true, // Добавляем для поддержки SPA (React Router)
+    historyApiFallback: true, // Поддержка SPA
     headers: {
       'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://www.gstatic.com; media-src 'self'"
     }
