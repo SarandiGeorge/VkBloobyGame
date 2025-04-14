@@ -33,7 +33,7 @@ module.exports = {
   },
   devServer: {
     static: {
-      directory: path.join(__dirname, 'public'), // Используем public/ для статических файлов
+      directory: path.join(__dirname, 'dist'), // Обслуживать файлы из dist/
     },
     port: 9000,
     https: true,
