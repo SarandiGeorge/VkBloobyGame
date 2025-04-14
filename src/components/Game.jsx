@@ -32,7 +32,7 @@ const Game = () => {
           default: 'arcade',
           arcade: {
             gravity: { y: 300 },
-            debug: true // Включаем отладку физики для проверки hitbox
+            debug: true // Включаем отладку физики
           }
         },
         scene: {
@@ -72,24 +72,24 @@ const Game = () => {
               .setScale(0.1) // Масштабирование до 40x40 px
               .setCircle(20) // Радиус hitbox — 20 px
               .setBounce(0.95);
-            console.log('Мяч создан:', this.ball); // Лог для отладки
+            console.log('Мяч создан:', this.ball);
 
             this.player = this.physics.add.image(100, 500, 'player')
               .setScale(0.1) // Масштабирование до ~57x49 px
               .setCircle(28) // Радиус hitbox — 28 px
               .setImmovable(true);
-            console.log('Игрок создан:', this.player); // Лог для отладки
+            console.log('Игрок создан:', this.player);
 
             this.opponent = this.physics.add.image(700, 500, 'opponent')
               .setScale(0.1) // Масштабирование до ~57x49 px
               .setCircle(28) // Радиус hitbox — 28 px
               .setImmovable(true);
-            console.log('Оппонент создан:', this.opponent); // Лог для отладки
+            console.log('Оппонент создан:', this.opponent);
 
             this.net = this.physics.add.image(400, 500, 'net')
               .setScale(0.2, 0.2) // Масштабирование до ~10x140 px
               .setImmovable(true);
-            console.log('Сетка создана:', this.net); // Лог для отладки
+            console.log('Сетка создана:', this.net);
 
             // Границы мира
             this.physics.world.setBounds(0, 0, 800, 600);
@@ -124,18 +124,24 @@ const Game = () => {
             // Отключение света
             this.isLightsOut = false;
             this.time.addEvent({
-              delay: 15000,
+              delay: 5000, // Уменьшаем задержку для теста (5 секунд вместо 15)
               callback: () => {
                 if (!this.isLightsOut) {
                   this.isLightsOut = true;
                   this.darken = this.add.rectangle(400, 300, 800, 600, 0x000000, 0.7);
                   this.darken.setInteractive(); // Делаем затемнение интерактивным
+                  this.darken.setDepth(1000); // Устанавливаем высокий слой, чтобы затемнение было поверх всего
                   this.darken.on('pointerdown', (pointer) => {
                     console.log('Клик по затемнению зарегистрирован:', pointer); // Лог для отладки
                     if (this.isLightsOut) {
                       this.darken.destroy();
                       this.isLightsOut = false;
                     }
+                  });
+
+                  // Альтернативный глобальный обработчик для теста
+                  this.input.on('pointerdown', (pointer) => {
+                    console.log('Глобальный клик мыши зарегистрирован:', pointer); // Лог для отладки
                   });
                 }
               },
