@@ -1,51 +1,37 @@
 const path = require('path');
-// Плагин для копирования index.html и других статических файлов
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js', // Точка входа
   output: {
-    path: path.resolve(__dirname, 'dist'), // Папка для сборки
-    filename: 'bundle.js', // Имя выходного файла
-    publicPath: '/', // Публичный путь для ресурсов
-    clean: true, // Очищать dist перед сборкой
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+    publicPath: '/', // Путь для ресурсов
   },
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/, // Обработка JS/JSX файлов
+        test: /\.(js|jsx)$/, // Обрабатываем JS/JSX файлы
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env', '@babel/preset-react']
-          }
-        }
+        use: ['babel-loader'],
       },
       {
-        test: /\.(png|jpg|jpeg|gif|ico|wav|mp3)$/, // Обработка активов
+        test: /\.(png|jpg|jpeg|gif|wav|mp3)$/, // Обрабатываем изображения и аудио
         type: 'asset/resource',
         generator: {
-          filename: 'assets/[name][ext]' // Копировать активы в dist/assets/
-        }
-      }
-    ]
+          filename: 'assets/[name][ext][query]', // Копируем в dist/assets/
+        },
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'], // Разрешаем импорты без указания расширения
   },
   devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'), // Обслуживать файлы из dist/
-    },
+    static: path.resolve(__dirname, 'dist'),
     port: 9000,
-    https: true,
-    historyApiFallback: true, // Перенаправлять все запросы на index.html
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html', // Использовать public/index.html как шаблон
-      filename: 'index.html', // Имя файла в dist/
-    })
-  ],
-  resolve: {
-    extensions: ['.js', '.jsx'], // Разрешённые расширения
+    headers: {
+      // Добавляем CSP в заголовки (как альтернатива meta-тегу)
+      'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://www.gstatic.com; media-src 'self'"
+    }
   },
 };
