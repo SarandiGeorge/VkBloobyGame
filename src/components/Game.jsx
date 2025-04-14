@@ -9,6 +9,7 @@ import opponentImage from '../assets/opponent.png';
 import netImage from '../assets/net.png';
 import impactSound from '../assets/impact.wav';
 import whistleSound from '../assets/whistle.wav';
+import backgroundImage from '../assets/background.png'; // Новый фон
 
 // Компонент игры
 const Game = () => {
@@ -31,12 +32,13 @@ const Game = () => {
           default: 'arcade',
           arcade: {
             gravity: { y: 300 },
-            debug: false
+            debug: true // Включаем отладку физики для проверки hitbox
           }
         },
         scene: {
           preload: function() {
             // Загрузка изображений и звуков
+            this.load.image('background', backgroundImage); // Загружаем фон
             this.load.image('ball', ballImage);
             this.load.image('player', playerImage);
             this.load.image('opponent', opponentImage);
@@ -53,7 +55,10 @@ const Game = () => {
             });
           },
           create: function() {
-            // Установка фонового цвета
+            // Добавляем фоновое изображение
+            this.add.image(400, 300, 'background');
+
+            // Установка фонового цвета (на случай, если фон не загрузится)
             this.cameras.main.setBackgroundColor('#87CEEB'); // Голубой фон
 
             // Проверка успешного создания сцены
@@ -67,20 +72,24 @@ const Game = () => {
               .setScale(0.1) // Масштабирование до 40x40 px
               .setCircle(20) // Радиус hitbox — 20 px
               .setBounce(0.95);
+            console.log('Мяч создан:', this.ball); // Лог для отладки
 
             this.player = this.physics.add.image(100, 500, 'player')
               .setScale(0.1) // Масштабирование до ~57x49 px
               .setCircle(28) // Радиус hitbox — 28 px
               .setImmovable(true);
+            console.log('Игрок создан:', this.player); // Лог для отладки
 
             this.opponent = this.physics.add.image(700, 500, 'opponent')
               .setScale(0.1) // Масштабирование до ~57x49 px
               .setCircle(28) // Радиус hitbox — 28 px
               .setImmovable(true);
+            console.log('Оппонент создан:', this.opponent); // Лог для отладки
 
             this.net = this.physics.add.image(400, 500, 'net')
               .setScale(0.2, 0.2) // Масштабирование до ~10x140 px
               .setImmovable(true);
+            console.log('Сетка создана:', this.net); // Лог для отладки
 
             // Границы мира
             this.physics.world.setBounds(0, 0, 800, 600);
@@ -120,13 +129,14 @@ const Game = () => {
                 if (!this.isLightsOut) {
                   this.isLightsOut = true;
                   this.darken = this.add.rectangle(400, 300, 800, 600, 0x000000, 0.7);
-                  this.input.on('pointerdown', (pointer) => {
-                    console.log('Клик мыши зарегистрирован:', pointer); // Лог для отладки
+                  this.darken.setInteractive(); // Делаем затемнение интерактивным
+                  this.darken.on('pointerdown', (pointer) => {
+                    console.log('Клик по затемнению зарегистрирован:', pointer); // Лог для отладки
                     if (this.isLightsOut) {
                       this.darken.destroy();
                       this.isLightsOut = false;
                     }
-                  }, this);
+                  });
                 }
               },
               loop: true
