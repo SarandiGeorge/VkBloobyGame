@@ -59,6 +59,9 @@ const Game = () => {
             // Проверка успешного создания сцены
             console.log('Сцена Phaser успешно создана');
 
+            // Включаем интерактивность для сцены
+            this.input.setGlobalTopOnly(false); // Разрешаем обработку событий на всех слоях
+
             // Создание игровых объектов
             this.ball = this.physics.add.image(400, 100, 'ball')
               .setScale(0.1) // Масштабирование до 40x40 px
@@ -117,7 +120,8 @@ const Game = () => {
                 if (!this.isLightsOut) {
                   this.isLightsOut = true;
                   this.darken = this.add.rectangle(400, 300, 800, 600, 0x000000, 0.7);
-                  this.input.on('pointerdown', () => {
+                  this.input.on('pointerdown', (pointer) => {
+                    console.log('Клик мыши зарегистрирован:', pointer); // Лог для отладки
                     if (this.isLightsOut) {
                       this.darken.destroy();
                       this.isLightsOut = false;
@@ -184,20 +188,20 @@ const Game = () => {
             this.input.keyboard.on('keydown-UP', () => {
               if (!this.isGameActive) {
                 this.menuSelection = (this.menuSelection - 1 + this.menuItems.length) % this.menuItems.length;
-                this.updateMenuSelection(); // Теперь this будет корректным
+                this.updateMenuSelection();
               }
             });
 
             this.input.keyboard.on('keydown-DOWN', () => {
               if (!this.isGameActive) {
                 this.menuSelection = (this.menuSelection + 1) % this.menuItems.length;
-                this.updateMenuSelection(); // Теперь this будет корректным
+                this.updateMenuSelection();
               }
             });
 
             this.input.keyboard.on('keydown-ENTER', () => {
               if (!this.isGameActive) {
-                this.handleMenuSelection(); // Теперь this будет корректным
+                this.handleMenuSelection();
               }
             });
 
