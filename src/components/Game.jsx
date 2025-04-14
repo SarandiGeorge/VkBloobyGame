@@ -1,9 +1,19 @@
+// Импорт React и хуков
 import React, { useEffect, useRef, useContext } from 'react';
+// Импорт хука для навигации
+import { useNavigate } from 'react-router-dom';
+// Импорт Phaser для игры
 import Phaser from 'phaser';
+// Импорт контекста баллов
 import { PointsContext } from '../contexts/PointsContext';
 
-const Game = ({ onBack }) => {
+// Компонент игры
+const Game = () => {
+  // Хук для навигации
+  const navigate = useNavigate();
+  // Получение функции обновления баллов из контекста
   const { updatePoints } = useContext(PointsContext);
+  // Реф для хранения экземпляра игры Phaser
   const gameRef = useRef(null);
 
   useEffect(() => {
@@ -21,6 +31,7 @@ const Game = ({ onBack }) => {
       },
       scene: {
         preload: function() {
+          // Загрузка изображений и звуков
           this.load.image('ball', '/assets/ball.png');
           this.load.image('player', '/assets/player.png');
           this.load.image('opponent', '/assets/opponent.png');
@@ -29,11 +40,29 @@ const Game = ({ onBack }) => {
           this.load.audio('whistle', '/assets/whistle.wav');
         },
         create: function() {
-          // Создание игровых объектов
-          this.ball = this.physics.add.image(400, 100, 'ball').setCircle(10).setBounce(0.95);
-          this.player = this.physics.add.image(100, 500, 'player').setCircle(25).setImmovable(true);
-          this.opponent = this.physics.add.image(700, 500, 'opponent').setCircle(25).setImmovable(true);
-          this.net = this.physics.add.image(400, 500, 'net').setImmovable(true);
+          // Создание игровых объектов с учётом новых размеров
+          // Мяч (400x400 px) — масштабируем до 40x40 px (масштаб 0.1)
+          this.ball = this.physics.add.image(400, 100, 'ball')
+            .setScale(0.1) // Масштабирование до 40x40 px
+            .setCircle(20) // Радиус hitbox — 20 px (половина ширины масштабированного изображения)
+            .setBounce(0.95);
+
+          // Игрок (572x488 px) — масштабируем до ~57x49 px (масштаб 0.1)
+          this.player = this.physics.add.image(100, 500, 'player')
+            .setScale(0.1) // Масштабирование до ~57x49 px
+            .setCircle(28) // Радиус hitbox — 28 px (примерно половина ширины масштабированного изображения)
+            .setImmovable(true);
+
+          // Оппонент (572x488 px) — масштабируем до ~57x49 px (масштаб 0.1)
+          this.opponent = this.physics.add.image(700, 500, 'opponent')
+            .setScale(0.1) // Масштабирование до ~57x49 px
+            .setCircle(28) // Радиус hitbox — 28 px
+            .setImmovable(true);
+
+          // Сетка (52x714 px) — масштабируем до ~10x140 px (масштаб 0.2 по ширине, 0.2 по высоте)
+          this.net = this.physics.add.image(400, 500, 'net')
+            .setScale(0.2, 0.2) // Масштабирование до ~10x140 px
+            .setImmovable(true);
 
           // Границы мира
           this.physics.world.setBounds(0, 0, 800, 600);
@@ -132,20 +161,29 @@ const Game = ({ onBack }) => {
       }
     };
 
+    // Создание экземпляра игры
     const game = new Phaser.Game(config);
     gameRef.current = game;
 
+    // Очистка при размонтировании
     return () => {
       game.destroy(true);
     };
-  }, []);
+  }, []); // Пустой массив зависимостей — выполняется один раз
 
   return (
     <div className="w-full h-full flex flex-col">
-      <button onClick={onBack} className="m-4 p-2 bg-blue-500 text-white rounded">Назад</button>
+      {/* Кнопка "Назад" с использованием navigate */}
+      <button
+        onClick={() => navigate('/')}
+        className="m-4 p-2 bg-blue-500 text-white rounded"
+      >
+        Назад
+      </button>
       <div id="game-container" className="flex-1"></div>
     </div>
   );
 };
 
+// Экспорт компонента
 export default Game;
