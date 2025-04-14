@@ -1,0 +1,6 @@
+{
+    "presets": [
+      "@babel/preset-env", // Для трансформации современного JS
+      "@babel/preset-react" // Для трансформации JSX
+    ]
+  }
