@@ -1,39 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import PointsProvider from './contexts/PointsContext';
-import Menu from './components/Menu';
+// Импорт React и хуков
+import React, { useEffect } from 'react';
+// Импорт компонента игры
 import Game from './components/Game';
-import SpendPointsMenu from './components/SpendPointsMenu';
-import InfoPage1 from './components/InfoPage1';
-import InfoPage2 from './components/InfoPage2';
-import InfoPage3 from './components/InfoPage3';
+// Импорт провайдера баллов
+import { PointsProvider } from './contexts/PointsContext';
+// Импорт VK Bridge
+import vkBridge from '@vkontakte/vk-bridge';
 
-const App = () => {
-  const [activePanel, setActivePanel] = useState('menu');
-
+// Основной компонент приложения
+function App() {
+  // Инициализация VK Bridge при монтировании
   useEffect(() => {
     vkBridge.send('VKWebAppInit', {});
-  }, []);
+  }, []); // Пустой массив зависимостей — выполняется один раз
 
   return (
+    // Оборачиваем всё в провайдер баллов
     <PointsProvider>
       <div className="w-full h-full bg-gray-100">
-        {activePanel === 'menu' && (
-          <Menu
-            onStartGame={() => setActivePanel('game')}
-            onSpendPoints={() => setActivePanel('spend')}
-            onInfo1={() => setActivePanel('info1')}
-            onInfo2={() => setActivePanel('info2')}
-            onInfo3={() => setActivePanel('info3')}
-          />
-        )}
-        {activePanel === 'game' && <Game onBack={() => setActivePanel('menu')} />}
-        {activePanel === 'spend' && <SpendPointsMenu onBack={() => setActivePanel('menu')} />}
-        {activePanel === 'info1' && <InfoPage1 onBack={() => setActivePanel('menu')} />}
-        {activePanel === 'info2' && <InfoPage2 onBack={() => setActivePanel('menu')} />}
-        {activePanel === 'info3' && <InfoPage3 onBack={() => setActivePanel('menu')} />}
+        <Game />
       </div>
     </PointsProvider>
   );
-};
+}
 
+// Экспорт компонента
 export default App;
