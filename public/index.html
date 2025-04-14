@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Обновляем CSP-политику -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://www.gstatic.com; media-src 'self'">
   <title>Blobby Volley</title>
-  <link rel="icon" href="/favicon.ico">
-  <!-- Content Security Policy: добавляем 'unsafe-eval' для разработки -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; media-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';">
 </head>
 <body>
   <div id="root"></div>
