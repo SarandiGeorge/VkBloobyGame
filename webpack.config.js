@@ -1,4 +1,6 @@
 const path = require('path');
+// Импорт copy-webpack-plugin
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js', // Точка входа
@@ -30,8 +32,18 @@ module.exports = {
     static: path.resolve(__dirname, 'dist'),
     port: 9000,
     headers: {
-      // Добавляем CSP в заголовки (как альтернатива meta-тегу)
       'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://www.gstatic.com; media-src 'self'"
     }
   },
+  plugins: [
+    // Добавляем плагин для копирования папки src/assets в dist/assets
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'src/assets'),
+          to: path.resolve(__dirname, 'dist/assets'),
+        },
+      ],
+    }),
+  ],
 };
