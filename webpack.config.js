@@ -31,17 +31,21 @@ module.exports = {
   devServer: {
     static: path.resolve(__dirname, 'dist'),
     port: 9000,
+    historyApiFallback: true, // Добавляем для поддержки SPA (React Router)
     headers: {
       'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://www.gstatic.com; media-src 'self'"
     }
   },
   plugins: [
-    // Добавляем плагин для копирования папки src/assets в dist/assets
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, 'src/assets'),
+          from: path.resolve(__dirname, 'src/assets'), // Копируем папку assets
           to: path.resolve(__dirname, 'dist/assets'),
+        },
+        {
+          from: path.resolve(__dirname, 'public/index.html'), // Копируем index.html
+          to: path.resolve(__dirname, 'dist/index.html'),
         },
       ],
     }),
